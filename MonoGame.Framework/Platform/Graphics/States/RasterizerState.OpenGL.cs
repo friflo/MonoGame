@@ -51,10 +51,13 @@ namespace Microsoft.Xna.Framework.Graphics
             }
 
 #if WINDOWS || DESKTOPGL
-			if (FillMode == FillMode.Solid) 
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            else
-				GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            if (GL.PolygonMode != null) //WASM at least doesn't implement this
+            {
+                if (FillMode == FillMode.Solid)
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                else
+                    GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+            }
 #else
             if (FillMode != FillMode.Solid)
                 throw new NotImplementedException();
@@ -70,7 +73,7 @@ namespace Microsoft.Xna.Framework.Graphics
                 device._lastRasterizerState.ScissorTestEnable = this.ScissorTestEnable;
             }
 
-            if (force || 
+            if (force ||
                 this.DepthBias != device._lastRasterizerState.DepthBias ||
                 this.SlopeScaleDepthBias != device._lastRasterizerState.SlopeScaleDepthBias)
             {
