@@ -21,6 +21,8 @@ internal static class Sdl
             return FuncLoader.LoadLibraryExt("libSDL2-2.0.so.0");
         else if (CurrentPlatform.OS == OS.MacOSX)
             return FuncLoader.LoadLibraryExt("libSDL2.dylib");
+        else if (CurrentPlatform.OS == OS.Browser)
+            return FuncLoader.LoadLibraryExt("libSDL2");
         else
             return FuncLoader.LoadLibraryExt("sdl2");
     }
