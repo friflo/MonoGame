@@ -662,13 +662,13 @@ namespace MonoGame.OpenGL
         [System.Security.SuppressUnmanagedCodeSecurity()]
         [UnmanagedFunctionPointer(callingConvention)]
         [MonoNativeFunctionWrapper]
-        internal delegate int EnableDelegate(EnableCap cap);
+        internal delegate void EnableDelegate(EnableCap cap);
         internal static EnableDelegate Enable;
 
         [System.Security.SuppressUnmanagedCodeSecurity()]
         [UnmanagedFunctionPointer(callingConvention)]
         [MonoNativeFunctionWrapper]
-        internal delegate int DisableDelegate(EnableCap cap);
+        internal delegate void DisableDelegate(EnableCap cap);
         internal static DisableDelegate Disable;
 
         [System.Security.SuppressUnmanagedCodeSecurity()]
@@ -1291,6 +1291,7 @@ namespace MonoGame.OpenGL
             GenTextures = LoadFunction<GenTexturesDelegte> ("glGenTextures");
             BindTexture = LoadFunction<BindTextureDelegate> ("glBindTexture");
 
+
             Enable = LoadFunction<EnableDelegate> ("glEnable");
             Disable = LoadFunction<DisableDelegate> ("glDisable");
             CullFace = LoadFunction<CullFaceDelegate> ("glCullFace");
@@ -1309,6 +1310,7 @@ namespace MonoGame.OpenGL
             ReadBuffer = LoadFunction<ReadBufferDelegate> ("glReadBuffer");
             DrawBuffer = LoadFunction<DrawBufferDelegate> ("glDrawBuffer");
 
+
             // Render Target Support. These might be null if they are not supported
             // see GraphicsDevice.OpenGL.FramebufferHelper.cs for handling other extensions.
             GenRenderbuffers = LoadFunction<GenRenderbuffersDelegate> ("glGenRenderbuffers");
@@ -1325,6 +1327,7 @@ namespace MonoGame.OpenGL
             BlitFramebuffer = LoadFunction<BlitFramebufferDelegate> ("glBlitFramebuffer");
             CheckFramebufferStatus = LoadFunction<CheckFramebufferStatusDelegate> ("glCheckFramebufferStatus");
 
+
             GenQueries = LoadFunction<GenQueriesDelegate> ("glGenQueries");
             BeginQuery = LoadFunction<BeginQueryDelegate> ("glBeginQuery");
             EndQuery = LoadFunction<EndQueryDelegate> ("glEndQuery");
@@ -1334,6 +1337,7 @@ namespace MonoGame.OpenGL
             if (GetQueryObject == null)
                 GetQueryObject = LoadFunction<GetQueryObjectDelegate> ("glGetQueryObjectiv");
             DeleteQueries = LoadFunction<DeleteQueriesDelegate> ("glDeleteQueries");
+
 
             ActiveTexture = LoadFunction<ActiveTextureDelegate> ("glActiveTexture");
             CreateShader = LoadFunction<CreateShaderDelegate> ("glCreateShader");
@@ -1345,6 +1349,7 @@ namespace MonoGame.OpenGL
             DeleteShader = LoadFunction<DeleteShaderDelegate> ("glDeleteShader");
             GetAttribLocation = LoadFunction<GetAttribLocationDelegate> ("glGetAttribLocation");
             GetUniformLocation = LoadFunction<GetUniformLocationDelegate> ("glGetUniformLocation");
+
 
             IsProgram = LoadFunction<IsProgramDelegate> ("glIsProgram");
             DeleteProgram = LoadFunction<DeleteProgramDelegate> ("glDeleteProgram");
@@ -1370,6 +1375,7 @@ namespace MonoGame.OpenGL
             StencilOp = LoadFunction<StencilOpDelegate> ("glStencilOp");
             StencilMask = LoadFunction<StencilMaskDelegate> ("glStencilMask");
 
+
             CompressedTexImage2D = LoadFunction<CompressedTexImage2DDelegate> ("glCompressedTexImage2D");
             TexImage2D = LoadFunction<TexImage2DDelegate> ("glTexImage2D");
             CompressedTexSubImage2D = LoadFunction<CompressedTexSubImage2DDelegate> ("glCompressedTexSubImage2D");
@@ -1391,6 +1397,7 @@ namespace MonoGame.OpenGL
 
             VertexAttribPointer = LoadFunction<VertexAttribPointerDelegate> ("glVertexAttribPointer");
 
+
             // Instanced drawing requires GL 3.2 or up, if the either of the following entry points can not be loaded
             // this will get flagged by setting SupportsInstancing in GraphicsCapabilities to false.
             try {
@@ -1401,6 +1408,7 @@ namespace MonoGame.OpenGL
             catch (EntryPointNotFoundException) {
                 // this will be detected in the initialization of GraphicsCapabilities
             }
+
 
 #if DEBUG
             try
@@ -1418,6 +1426,8 @@ namespace MonoGame.OpenGL
             {
                 // Ignore the debug message callback if the entry point can not be found
             }
+
+
 #endif
             if (BoundApi == RenderApi.ES) {
                 InvalidateFramebuffer = LoadFunction<InvalidateFramebufferDelegate> ("glDiscardFramebufferEXT");
@@ -1455,7 +1465,7 @@ namespace MonoGame.OpenGL
                 GL.LoadFrameBufferObjectEXTEntryPoints();
             }
             if (GL.RenderbufferStorageMultisample == null)
-            {                
+            {
                 if (Extensions.Contains("GL_APPLE_framebuffer_multisample"))
                 {
                     GL.RenderbufferStorageMultisample = LoadFunction<GL.RenderbufferStorageMultisampleDelegate>("glRenderbufferStorageMultisampleAPPLE");
