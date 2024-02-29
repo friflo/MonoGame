@@ -11,7 +11,11 @@ namespace MonoGame.OpenGL
     {
         static partial void LoadPlatformEntryPoints()
         {
+            #if GLES
+            BoundApi = RenderApi.ES;
+            #else
             BoundApi = RenderApi.GL;
+            #endif
         }
 
         private static T LoadFunction<T>(string function, bool throwIfNotFound = false)
