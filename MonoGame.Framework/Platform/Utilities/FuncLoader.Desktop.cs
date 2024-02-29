@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace MonoGame.Framework.Utilities
@@ -32,7 +33,20 @@ namespace MonoGame.Framework.Utilities
             [DllImport("/usr/lib/libSystem.dylib")]
             public static extern IntPtr dlsym(IntPtr handle, string symbol);
         }
-        
+
+        private class Browser
+        {
+            public static IntPtr NativeLoadLibrary(string path)
+            {
+                return NativeLibrary.Load(path, Assembly.GetExecutingAssembly(), null);
+            }
+
+            public static IntPtr NativeLoadSymbol(IntPtr handle, string symbol)
+            {
+                return NativeLibrary.GetExport(handle, symbol);
+            }
+        }
+
         private const int RTLD_LAZY = 0x0001;
 
         public static IntPtr LoadLibraryExt(string libname)
@@ -51,10 +65,18 @@ namespace MonoGame.Framework.Utilities
             }
             else
             {
-                if (Environment.Is64BitProcess)
-                    ret = LoadLibrary(Path.Combine(assemblyLocation, "x64", libname));
+                if (CurrentPlatform.OS == OS.Browser)
+                {
+                    //in WASM builds, the library is present directly at the root
+                    ret = LoadLibrary(libname);
+                }
                 else
-                    ret = LoadLibrary(Path.Combine(assemblyLocation, "x86", libname));
+                {
+                    if (Environment.Is64BitProcess)
+                        ret = LoadLibrary(Path.Combine(assemblyLocation, "x64", libname));
+                    else
+                        ret = LoadLibrary(Path.Combine(assemblyLocation, "x86", libname));
+                }
             }
 
             // Try .NET Core development locations
@@ -89,6 +111,9 @@ namespace MonoGame.Framework.Utilities
             if (CurrentPlatform.OS == OS.MacOSX)
                 return OSX.dlopen(libname, RTLD_LAZY);
 
+            if (CurrentPlatform.OS == OS.Browser)
+                return Browser.NativeLoadLibrary(libname);
+
             return Linux.dlopen(libname, RTLD_LAZY);
         }
 
@@ -100,6 +125,8 @@ namespace MonoGame.Framework.Utilities
                 ret = Windows.GetProcAddress(library, function);
             else if (CurrentPlatform.OS == OS.MacOSX)
                 ret = OSX.dlsym(library, function);
+            else if (CurrentPlatform.OS == OS.Browser)
+                ret = Browser.NativeLoadSymbol(library, function);
             else
                 ret = Linux.dlsym(library, function);
 
