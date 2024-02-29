@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.Xna.Framework.Graphics;
+using MonoGame.Framework.Utilities;
 
 namespace MonoGame.OpenGL
 {
@@ -39,11 +40,16 @@ namespace MonoGame.OpenGL
         {
             if (_disposed)
                 return;
-            
+
             SetWindowHandle(info);
 #if DEBUG
-            // create debug context, so we get better error messages (glDebugMessageCallback)
-            Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextFlags, 1); // 1 = SDL_GL_CONTEXT_DEBUG_FLAG
+
+            if (CurrentPlatform.OS != OS.Browser) //on WASM, setting this breaks context creation
+            {
+                // create debug context, so we get better error messages (glDebugMessageCallback)
+                Sdl.GL.SetAttribute(Sdl.GL.Attribute.ContextFlags, 1); // 1 = SDL_GL_CONTEXT_DEBUG_FLAG
+            }
+
 #endif
             _context = Sdl.GL.CreateContext(_winHandle);
 
@@ -64,7 +70,7 @@ namespace MonoGame.OpenGL
         {
             if (_disposed)
                 return;
-            
+
             SetWindowHandle(info);
             Sdl.GL.MakeCurrent(_winHandle, _context);
         }
@@ -73,7 +79,7 @@ namespace MonoGame.OpenGL
         {
             if (_disposed)
                 return;
-            
+
             Sdl.GL.SwapWindow(_winHandle);
         }
 
