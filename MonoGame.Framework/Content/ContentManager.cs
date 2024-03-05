@@ -317,7 +317,12 @@ namespace Microsoft.Xna.Framework.Content
 			object result = null;
 
             // Try to load as XNB file
-            var stream = OpenStream(assetName);
+            Stream stream;
+            if (ResourceAssembly != null) {
+                stream = GetResourceStream(assetName);
+            } else {
+                stream = OpenStream(assetName);
+            }
             using (var xnbReader = new BinaryReader(stream))
             {
                 using (var reader = GetContentReaderFromXnb(assetName, stream, xnbReader, recordDisposableObject))
@@ -333,6 +338,16 @@ namespace Microsoft.Xna.Framework.Content
 
 			return (T)result;
 		}
+
+        /// <summary>
+        /// Load content file as resource from application assembly.
+        /// These files are placed in: Content/bin/DesktopGL
+        /// </summary>
+        private Stream GetResourceStream(string resourceName) {
+            var resource = $"SdlWasmSample.Content.bin.DesktopGL.{resourceName.ToLower()}.xnb";
+            // Console.WriteLine($"--- GetResourceStream: {resource}, ResourceAssembly: {ResourceAssembly}");
+            return ResourceAssembly.GetManifestResourceStream(resource);
+        }
 
         private ContentReader GetContentReaderFromXnb(string originalAssetName, Stream stream, BinaryReader xnbReader, Action<IDisposable> recordDisposableObject)
         {
@@ -506,6 +521,8 @@ namespace Microsoft.Xna.Framework.Content
                 UnloadAsset(assetNames[i]);
             }
         }
+
+        public Assembly ResourceAssembly;
 
 		public string RootDirectory
 		{
