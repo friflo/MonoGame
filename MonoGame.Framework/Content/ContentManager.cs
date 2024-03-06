@@ -343,10 +343,16 @@ namespace Microsoft.Xna.Framework.Content
         /// Load content file as resource from application assembly.
         /// These files are placed in: Content/bin/DesktopGL
         /// </summary>
-        private Stream GetResourceStream(string resourceName) {
-            var resource = $"SdlWasmSample.Content.bin.DesktopGL.{resourceName.ToLower()}.xnb";
-            // Console.WriteLine($"--- GetResourceStream: {resource}, ResourceAssembly: {ResourceAssembly}");
-            return ResourceAssembly.GetManifestResourceStream(resource);
+        private Stream GetResourceStream(string assetName) {
+            var assemblyName = ResourceAssembly.GetName().Name;
+            var name = assetName.Replace("/", ".");
+            var resource = $"{assemblyName}.Content.bin.DesktopGL.Content.{name}.xnb";
+            Console.WriteLine($"--- GetResourceStream: {resource}, ResourceAssembly: {ResourceAssembly}");
+            var result = ResourceAssembly.GetManifestResourceStream(resource);
+            if (result == null) {
+                Console.WriteLine($"Content asset not found: {assetName}. resource: {resource}");
+            }
+            return result;
         }
 
         private ContentReader GetContentReaderFromXnb(string originalAssetName, Stream stream, BinaryReader xnbReader, Action<IDisposable> recordDisposableObject)
